@@ -96,7 +96,7 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) 
         </div>
         
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Deploy Your Frontend + Backend <br className="hidden md:block" />
+          Create Your Frontend + Backend <br className="hidden md:block" />
           Using Docker & MongoDB  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400"> Instantly</span>.
         </h1>
         
