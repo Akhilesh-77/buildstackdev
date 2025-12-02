@@ -30,3 +30,10 @@ export enum SupportedLanguage {
   MARKDOWN = 'markdown',
   PLAINTEXT = 'plaintext'
 }
+
+export interface FileNode {
+  name: string;
+  type: 'file' | 'folder';
+  children?: FileNode[];
+  content?: string;
+}

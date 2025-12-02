@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Rocket, Server, Shield, Database, Layout, Terminal } from 'lucide-react';
+import { DocumentationModal } from './DocumentationModal';
 
 interface LandingHeaderProps {
   onStartHosting: () => void;
 }
 
 export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) => {
+  const [showDocs, setShowDocs] = useState(false);
+
   return (
     <div className="w-full mb-12 space-y-12 animate-fade-in">
+      <DocumentationModal isOpen={showDocs} onClose={() => setShowDocs(false)} />
+      
       {/* Hero Section */}
       <div className="text-center space-y-6 pt-8 pb-4">
         <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-sm text-blue-600 dark:text-blue-400">
@@ -19,13 +24,14 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) 
         </div>
         
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Host your Frontend + Backend <br className="hidden md:block" />
-          in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400">30 Minutes</span>.
+          Create Your Frontend + Backend <br className="hidden md:block" />
+          Using Docker & MongoDB in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400">30 Minutes</span>.
         </h1>
         
         <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-          The all-in-one platform for developers. Deploy your MERN stack apps, 
-          manage code snippets, and share projects with zero configuration.
+          The all-in-one platform for developers to containerize MERN apps, 
+          generate Docker builds instantly, set up MongoDB services, 
+          and deploy full-stack projects with zero complexity.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -33,16 +39,19 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) 
             onClick={onStartHosting}
             className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-all hover:bg-blue-500 hover:scale-105 active:scale-95 shadow-lg shadow-blue-600/20 dark:shadow-blue-900/20"
           >
-            Start Hosting Free
+            Start Deployment
           </button>
-          <button className="rounded-lg border border-slate-200 bg-white px-8 py-3 font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:hover:bg-slate-800 dark:hover:border-slate-600 transition-all">
+          <button 
+            onClick={() => setShowDocs(true)}
+            className="rounded-lg border border-slate-200 bg-white px-8 py-3 font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white dark:hover:bg-slate-800 dark:hover:border-slate-600 transition-all"
+          >
             View Documentation
           </button>
         </div>
       </div>
 
       {/* Feature Image */}
-      <div className="relative mx-auto max-w-5xl rounded-xl border border-slate-200 bg-white/50 dark:border-slate-800 dark:bg-slate-900/50 p-2 shadow-2xl backdrop-blur-xl">
+      <div className="relative mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/50 dark:border-slate-800 dark:bg-slate-900/50 p-2 shadow-2xl backdrop-blur-xl">
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-slate-950 opacity-50 z-10"></div>
         <img 
           src="https://ik.imagekit.io/akhileshu/image.png" 
