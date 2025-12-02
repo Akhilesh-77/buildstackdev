@@ -1,10 +1,82 @@
 import React, { useState } from 'react';
-import { Rocket, Server, Shield, Database, Layout, Terminal } from 'lucide-react';
+import { Rocket, Server, Shield, Database, Layout, Terminal, Folder, File, ChevronRight, ChevronDown, FileCode, FileJson } from 'lucide-react';
 import { DocumentationModal } from './DocumentationModal';
 
 interface LandingHeaderProps {
   onStartHosting: () => void;
 }
+
+interface LandingFileNode {
+  name: string;
+  type: 'file' | 'folder';
+  children?: LandingFileNode[];
+}
+
+const LANDING_TREE_DATA: LandingFileNode = {
+  name: 'simple-project',
+  type: 'folder',
+  children: [
+    { name: 'docker-compose.yml', type: 'file' },
+    {
+      name: 'backend',
+      type: 'folder',
+      children: [
+        { name: 'server.js', type: 'file' },
+        { name: 'package.json', type: 'file' },
+        { name: 'Dockerfile', type: 'file' }
+      ]
+    },
+    {
+      name: 'frontend',
+      type: 'folder',
+      children: [
+        { name: 'App.jsx', type: 'file' },
+        { name: 'index.html', type: 'file' },
+        { name: 'Dockerfile', type: 'file' }
+      ]
+    }
+  ]
+};
+
+const LandingTreeNode: React.FC<{ node: LandingFileNode; level: number }> = ({ node, level }) => {
+  const [isOpen, setIsOpen] = useState(true);
+  const hasChildren = node.type === 'folder' && node.children && node.children.length > 0;
+
+  const getIcon = (name: string, type: 'file' | 'folder') => {
+    if (type === 'folder') return <Folder size={18} className="text-blue-500 fill-blue-500/20" />;
+    if (name.includes('docker')) return <File size={18} className="text-blue-400" />;
+    if (name.endsWith('js') || name.endsWith('jsx')) return <FileCode size={18} className="text-yellow-500" />;
+    if (name.endsWith('html')) return <FileCode size={18} className="text-orange-500" />;
+    if (name.endsWith('json')) return <FileJson size={18} className="text-green-500" />;
+    return <File size={18} className="text-slate-400" />;
+  };
+
+  return (
+    <div className="select-none">
+      <div 
+        className="group flex items-center gap-2 py-1.5 px-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md cursor-pointer transition-colors"
+        style={{ paddingLeft: `${level * 24 + 12}px` }}
+        onClick={() => hasChildren && setIsOpen(!isOpen)}
+      >
+        <span className={`text-slate-400 transition-transform duration-200 ${hasChildren && isOpen ? 'rotate-90' : ''} ${!hasChildren ? 'invisible' : ''}`}>
+          <ChevronRight size={14} />
+        </span>
+        
+        {getIcon(node.name, node.type)}
+        
+        <span className={`text-sm font-mono ${node.type === 'folder' ? 'font-semibold text-slate-700 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'} group-hover:text-slate-900 dark:group-hover:text-white transition-colors`}>
+          {node.name}
+        </span>
+      </div>
+      
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        {node.children?.map((child, index) => (
+          <LandingTreeNode key={index} node={child} level={level + 1} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) => {
   const [showDocs, setShowDocs] = useState(false);
@@ -24,8 +96,8 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) 
         </div>
         
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-          Create Your Frontend + Backend <br className="hidden md:block" />
-          Using Docker & MongoDB in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400">30 Minutes</span>.
+          Deploy Your Frontend + Backend <br className="hidden md:block" />
+          Using Docker & MongoDB  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-600 dark:from-blue-400 dark:to-emerald-400"> Instantly</span>.
         </h1>
         
         <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -50,20 +122,25 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onStartHosting }) 
         </div>
       </div>
 
-      {/* Feature Image */}
-      <div className="relative mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/50 dark:border-slate-800 dark:bg-slate-900/50 p-2 shadow-2xl backdrop-blur-xl">
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-slate-950 opacity-50 z-10"></div>
-        <img 
-          src="https://ik.imagekit.io/akhileshu/image.png" 
-          alt="BuildStack Dashboard Preview" 
-          className="w-full h-auto rounded-lg shadow-inner opacity-90 hover:opacity-100 transition-opacity duration-700"
-          loading="lazy"
-        />
-        <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end">
-          <div className="hidden sm:block">
-            <span className="text-xs font-mono text-slate-500 bg-white/90 dark:bg-slate-900/80 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
-              dashboard_preview_v2.png
-            </span>
+      {/* Feature Tree View */}
+      <div className="relative mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/50 dark:border-slate-800 dark:bg-slate-900/50 p-2 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-blue-500/10 dark:hover:shadow-blue-900/10">
+        <div className="bg-white dark:bg-[#0f172a] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+          {/* Mac-style Window Header */}
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 py-3 bg-slate-50/50 dark:bg-slate-900/50">
+             <div className="flex items-center gap-2">
+                <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                </div>
+             </div>
+             <div className="text-xs font-mono text-slate-400 select-none">buildstack-explorer</div>
+             <div className="w-10"></div>
+          </div>
+
+          {/* Tree Content */}
+          <div className="p-4 min-h-[300px] overflow-auto">
+             <LandingTreeNode node={LANDING_TREE_DATA} level={0} />
           </div>
         </div>
       </div>
